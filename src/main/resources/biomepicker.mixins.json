@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.cominixo.biomepicker.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MinecraftServerMixin",
+    "CreateWorldScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
