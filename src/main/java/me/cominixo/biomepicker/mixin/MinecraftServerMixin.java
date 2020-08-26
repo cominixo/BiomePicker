@@ -1,6 +1,6 @@
 package me.cominixo.biomepicker.mixin;
 
-import me.cominixo.biomepicker.BiomePicker;
+import me.cominixo.biomepicker.gui.BiomeSelectionScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -26,16 +26,16 @@ public class MinecraftServerMixin {
     private static void setupSpawn(ServerWorld serverWorld, ServerWorldProperties serverWorldProperties, boolean bl, boolean bl2, boolean bl3, CallbackInfo ci) {
         BlockPos blockPos = new BlockPos(0, serverWorld.getSeaLevel(), 0);
 
-        if (BiomePicker.selectedBiome == null) {
+        if (BiomeSelectionScreen.selectedBiome == null) {
             newBlockPos = blockPos;
             return;
         }
 
         for (Biome biome : BuiltinRegistries.BIOME) {
 
-            if (BuiltinRegistries.BIOME.getId(biome) == BiomePicker.biomes.get(BiomePicker.currentIndex)) {
+            if (BuiltinRegistries.BIOME.getId(biome) == BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)) {
 
-                BlockPos foundBlockPos = serverWorld.locateBiome(serverWorld.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(BiomePicker.biomes.get(BiomePicker.currentIndex)), blockPos, 10000, 8);
+                BlockPos foundBlockPos = serverWorld.locateBiome(serverWorld.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)), blockPos, 20000, 8);
                 if (foundBlockPos == null) {
                     newBlockPos = blockPos;
                 } else {
@@ -69,13 +69,14 @@ public class MinecraftServerMixin {
             return;
         }
 
-        if (BiomePicker.selectedBiome == null) {
+        if (BiomeSelectionScreen.selectedBiome == null) {
             return;
         }
 
-        cir.setReturnValue(server.getOverworld().getRegistryManager().get(Registry.BIOME_KEY).getId(biome) == BiomePicker.biomes.get(BiomePicker.currentIndex)
+        cir.setReturnValue(server.getOverworld().getRegistryManager().get(Registry.BIOME_KEY).getId(biome) == BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)
                            && biome.getCategory() != Biome.Category.NETHER
-                           && biome.getCategory() != Biome.Category.THEEND);
+                           && biome.getCategory() != Biome.Category.THEEND
+                           && biome.getCategory() != Biome.Category.NONE);
     }
 
 
