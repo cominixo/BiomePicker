@@ -8,75 +8,51 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.level.ServerWorldProperties;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Random;
+import java.util.function.Predicate;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
 
-    private static BlockPos newBlockPos;
+    private static ServerWorld world;
 
     @Inject(method = "setupSpawn", at = @At("HEAD"))
-    private static void setupSpawn(ServerWorld serverWorld, ServerWorldProperties serverWorldProperties, boolean bl, boolean bl2, boolean bl3, CallbackInfo ci) {
-        BlockPos blockPos = new BlockPos(0, serverWorld.getSeaLevel(), 0);
+    private static void setupSpawn(ServerWorld serverWorld, ServerWorldProperties worldProperties, boolean bonusChest, boolean debugWorld, CallbackInfo ci) {
+        world = serverWorld;
+    }
+
+    @Redirect(method = "setupSpawn", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/biome/source/BiomeSource;locateBiome(IIIILjava/util/function/Predicate;Ljava/util/Random;)Lnet/minecraft/util/math/BlockPos;"
+    ))
+    private static BlockPos changeBlockPos(BiomeSource biomeSource, int x, int y, int z, int radius, Predicate<Biome> predicate, Random random) {
+
+        BlockPos blockPos = new BlockPos(0, world.getSeaLevel(), 0);
 
         if (BiomeSelectionScreen.selectedBiome == null) {
-            newBlockPos = blockPos;
-            return;
+            return blockPos;
         }
 
         for (Biome biome : BuiltinRegistries.BIOME) {
 
             if (BuiltinRegistries.BIOME.getId(biome) == BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)) {
 
-                BlockPos foundBlockPos = serverWorld.locateBiome(serverWorld.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)), blockPos, 20000, 8);
-                if (foundBlockPos == null) {
-                    newBlockPos = blockPos;
-                } else {
-                    newBlockPos = foundBlockPos.mutableCopy();
+                BlockPos foundBlockPos = world.locateBiome(world.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)), blockPos, 20000, 8);
+                if (foundBlockPos != null) {
+                    blockPos = foundBlockPos.mutableCopy();
                 }
                 break;
 
-            } else {
-                newBlockPos = blockPos;
             }
         }
-    }
-
-    @ModifyConstant(method = "setupSpawn", constant = @Constant(intValue = 0, ordinal = 0))
-    private static int changeBlockX(int i) {
-        return newBlockPos.getX();
-    }
-
-    @ModifyConstant(method = "setupSpawn", constant = @Constant(intValue = 0, ordinal = 1))
-    private static int changeBlockZ(int i) {
-        return newBlockPos.getZ();
-    }
-
-    @Inject(method = "method_31146(Lnet/minecraft/world/biome/Biome;)Z", at = @At("HEAD"), cancellable = true)
-    private static void modifyAcceptableBiome(Biome biome, CallbackInfoReturnable<Boolean> cir) {
-
-        MinecraftServer server = MinecraftClient.getInstance().getServer();
-
-        if (server == null) {
-            cir.setReturnValue(false);
-            return;
-        }
-
-        if (BiomeSelectionScreen.selectedBiome == null) {
-            return;
-        }
-
-        cir.setReturnValue(server.getOverworld().getRegistryManager().get(Registry.BIOME_KEY).getId(biome) == BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)
-                           && biome.getCategory() != Biome.Category.NETHER
-                           && biome.getCategory() != Biome.Category.THEEND
-                           && biome.getCategory() != Biome.Category.NONE);
+        return blockPos;
     }
 
 
