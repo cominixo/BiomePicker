@@ -18,7 +18,6 @@ import net.minecraft.world.biome.Biome;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.Comparator;
-import me.cominixo.biomepicker.gui.BiomeSelectionScreen.BiomesListWidget;
 
 public class BiomeSelectionScreen extends Screen {
 
@@ -120,7 +119,7 @@ public class BiomeSelectionScreen extends Screen {
 
             @Override
             public Text method_37006() {
-                return null;
+                return text;
             }
         }
     }

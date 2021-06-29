@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "biomepicker",
-  "version": "1.1",
+  "version": "1.1.1",
   "name": "Biome Picker",
   "description": "A mod that lets you choose the biome you spawn in before creating a new world.",
   "icon": "assets/biomepicker/icon.png",
