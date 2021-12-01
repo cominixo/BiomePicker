@@ -18,6 +18,7 @@ import net.minecraft.world.biome.Biome;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.Comparator;
+import me.cominixo.biomepicker.gui.BiomeSelectionScreen.BiomesListWidget;
 
 public class BiomeSelectionScreen extends Screen {
 
@@ -32,7 +33,7 @@ public class BiomeSelectionScreen extends Screen {
     }
 
     public void onClose() {
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
     }
 
     protected void init() {
@@ -42,10 +43,10 @@ public class BiomeSelectionScreen extends Screen {
         //this.children().add(this.biomeSelectionList);
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, (buttonWidget) -> {
 
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, (buttonWidget) -> {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }));
         this.biomeSelectionList.setSelected(null);
     }
@@ -118,7 +119,7 @@ public class BiomeSelectionScreen extends Screen {
             }
 
             @Override
-            public Text method_37006() {
+            public Text getNarration() {
                 return text;
             }
         }

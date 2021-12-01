@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -30,9 +31,9 @@ public class MinecraftServerMixin {
 
     @Redirect(method = "setupSpawn", at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/biome/source/BiomeSource;locateBiome(IIIILjava/util/function/Predicate;Ljava/util/Random;)Lnet/minecraft/util/math/BlockPos;"
+            target = "Lnet/minecraft/server/network/SpawnLocating;findServerSpawnPoint(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/ChunkPos;)Lnet/minecraft/util/math/BlockPos;"
     ))
-    private static BlockPos changeBlockPos(BiomeSource biomeSource, int x, int y, int z, int radius, Predicate<Biome> predicate, Random random) {
+    private static BlockPos changeBlockPos(ServerWorld world, ChunkPos chunkPos) {
 
         BlockPos blockPos = new BlockPos(0, world.getSeaLevel(), 0);
 

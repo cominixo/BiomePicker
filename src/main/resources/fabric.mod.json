@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "biomepicker",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "name": "Biome Picker",
   "description": "A mod that lets you choose the biome you spawn in before creating a new world.",
   "icon": "assets/biomepicker/icon.png",
@@ -15,7 +15,7 @@
     "biomepicker.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.9.1+build.205",
-    "minecraft": ">=1.16.2"
+    "fabricloader": ">=0.10.0",
+    "minecraft": "1.18.*"
   }
 }

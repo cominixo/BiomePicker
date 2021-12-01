@@ -24,7 +24,7 @@ public abstract class CreateWorldScreenMixin extends Screen {
     @Inject(method = "init", at = @At("HEAD"))
     public void initBiomeButton(CallbackInfo ci) {
         this.addDrawableChild(new ButtonWidget(width / 2 - 155, 209, 310, 20, new TranslatableText("biomepicker.spawnbiome"),
-                (button) -> MinecraftClient.getInstance().openScreen(new BiomeSelectionScreen(MinecraftClient.getInstance().currentScreen))));
+                (button) -> MinecraftClient.getInstance().setScreen(new BiomeSelectionScreen(MinecraftClient.getInstance().currentScreen))));
     }
 
 }
