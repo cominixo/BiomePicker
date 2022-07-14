@@ -5,11 +5,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,7 +20,7 @@ public abstract class CreateWorldScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("HEAD"))
     public void initBiomeButton(CallbackInfo ci) {
-        this.addDrawableChild(new ButtonWidget(width / 2 - 155, 209, 310, 20, new TranslatableText("biomepicker.spawnbiome"),
+        this.addDrawableChild(new ButtonWidget(width / 2 - 155, 209, 310, 20, Text.translatable("biomepicker.spawnbiome"),
                 (button) -> MinecraftClient.getInstance().setScreen(new BiomeSelectionScreen(MinecraftClient.getInstance().currentScreen))));
     }
 

@@ -1,22 +1,19 @@
 package me.cominixo.biomepicker.mixin;
 
+import com.mojang.datafixers.util.Pair;
 import me.cominixo.biomepicker.gui.BiomeSelectionScreen;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.level.ServerWorldProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Random;
 import java.util.function.Predicate;
 
 @Mixin(MinecraftServer.class)
@@ -45,9 +42,10 @@ public class MinecraftServerMixin {
 
             if (BuiltinRegistries.BIOME.getId(biome) == BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)) {
 
-                BlockPos foundBlockPos = world.locateBiome(world.getServer().getRegistryManager().get(Registry.BIOME_KEY).get(BuiltinRegistries.BIOME.getId(BiomeSelectionScreen.selectedBiome)), blockPos, 20000, 8);
-                if (foundBlockPos != null) {
-                    blockPos = foundBlockPos.mutableCopy();
+                Predicate<RegistryEntry<Biome>> predicate = key -> key.getKey().equals(BuiltinRegistries.BIOME.getKey(BiomeSelectionScreen.selectedBiome));
+                Pair<BlockPos, RegistryEntry<Biome>> result = world.locateBiome(predicate, blockPos, 20000, 32, 64);
+                if (result != null) {
+                    blockPos = result.getFirst().mutableCopy();
                 }
                 break;
 

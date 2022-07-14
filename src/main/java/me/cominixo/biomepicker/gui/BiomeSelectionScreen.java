@@ -4,21 +4,17 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.registry.*;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import org.apache.commons.lang3.text.WordUtils;
-
-import java.util.Comparator;
-import me.cominixo.biomepicker.gui.BiomeSelectionScreen.BiomesListWidget;
 
 public class BiomeSelectionScreen extends Screen {
 
@@ -28,7 +24,7 @@ public class BiomeSelectionScreen extends Screen {
     public static Biome selectedBiome;
 
     public BiomeSelectionScreen(Screen screen) {
-        super(new TranslatableText("biomepicker.spawnbiome"));
+        super(Text.translatable("biomepicker.spawnbiome"));
         this.parent = screen;
     }
 
@@ -40,7 +36,6 @@ public class BiomeSelectionScreen extends Screen {
         this.client.keyboard.setRepeatEvents(true);
         this.biomeSelectionList = new BiomeSelectionScreen.BiomesListWidget();
         this.addDrawableChild(this.biomeSelectionList);
-        //this.children().add(this.biomeSelectionList);
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, (buttonWidget) -> {
 
             this.client.setScreen(this.parent);
@@ -61,17 +56,8 @@ public class BiomeSelectionScreen extends Screen {
     class BiomesListWidget extends AlwaysSelectedEntryListWidget<BiomesListWidget.BiomeItem> {
         private BiomesListWidget() {
             super(BiomeSelectionScreen.this.client, BiomeSelectionScreen.this.width, BiomeSelectionScreen.this.height, 40, BiomeSelectionScreen.this.height - 37, 16);
-            BuiltinRegistries.BIOME.getEntries().stream().sorted(Comparator.comparing((entry) -> (entry.getKey()).getValue().toString())).forEach((entry)
-                    -> {
-                        Biome biome = entry.getValue();
+            MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach((key) -> this.addEntry(new BiomeItem(BuiltinRegistries.BIOME.get(key))));
 
-                        if (biome.getCategory() != Biome.Category.NETHER
-                        && biome.getCategory() != Biome.Category.THEEND
-                        && biome.getCategory() != Biome.Category.NONE) {
-                            this.addEntry(new BiomeSelectionScreen.BiomesListWidget.BiomeItem(biome));
-                        }
-
-                    });
         }
 
         protected boolean isFocused() {
@@ -98,9 +84,9 @@ public class BiomeSelectionScreen extends Screen {
                 Identifier identifier = BuiltinRegistries.BIOME.getId(biome);
                 String string = "biome." + identifier.getNamespace() + "." + identifier.getPath();
                 if (Language.getInstance().hasTranslation(string)) {
-                    this.text = new TranslatableText(string);
+                    this.text = Text.translatable(string);
                 } else {
-                    this.text = new LiteralText(WordUtils.capitalize(identifier.getPath().replace("_", " ")));
+                    this.text = Text.literal(WordUtils.capitalize(identifier.getPath().replace("_", " ")));
                 }
 
             }
